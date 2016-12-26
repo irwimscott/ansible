@@ -1,5 +1,5 @@
 - name: Teste1 Ansible tower
-  hosts: linux
+  hosts: localhost
   tasks:
     - name: Create TEMP file
       file:
