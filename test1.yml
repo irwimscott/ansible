@@ -1,0 +1,18 @@
+- name: Teste1 Ansible tower
+  hosts: linux
+  tasks:
+    - name: Create TEMP file
+      file:
+       path: /tmp/test1_ansible.txt
+       state: touch
+
+    - name: Adding line in a file
+      lineinfile:
+       dest: /tmp/test1_ansible.txt
+       line: 'Testing lineinfile'
+
+    - name: Start HTTPD24 if not started
+      service:
+       name: httpd
+       state: started
+      become: true
