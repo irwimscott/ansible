@@ -6,10 +6,17 @@
        path: /tmp/test1_ansible.txt
        state: touch
 
-    - name: Adding line in a file
+    - name: Adding Test line 1 in a file
       lineinfile:
        dest: /tmp/test1_ansible.txt
-       line: 'Testing lineinfile'
+       line: 'Testing lineinfile 1'
+      tags: addline1
+      
+    - name: Adding Test Line 2 in a file
+      lineinfile:
+       dest: /tmp/test1_ansible.txt
+       line: 'Testing lineinfile 2'
+      tags: addline2
 
     - name: Start HTTPD24 if not started
       service:
