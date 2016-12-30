@@ -1,0 +1,19 @@
+- name: Teste1 Ansible
+  hosts: '{{ host }}'
+  tasks:
+    - name: Create TEMP file
+      file:
+       path: /tmp/test1_ansible.txt
+       state: touch
+
+    - name: Adding Test line 1 in a file
+      lineinfile:
+       dest: /tmp/test1_ansible.txt
+       line: 'Testing lineinfile 1 {{ host }}'
+      tags: addline1
+
+    - name: Adding Test Line 2 in a file
+      lineinfile:
+       dest: /tmp/test1_ansible.txt
+       line: 'Testing lineinfile 2 {{ host }}'
+      tags: addline2
