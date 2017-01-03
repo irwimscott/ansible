@@ -1,0 +1,21 @@
+---
+
+- name: Playbook to download IBM RA tar file and install new module in JBoss EAP6 dir structure
+  hosts: '{{ host }}'
+
+  tasks:
+    - name: Validate if the module version is already installed
+      shell: grep "{{ mq_module_version }}" /tmp/teste.txt
+      ignore_errors: true
+      register: installed_version
+
+    - name: Check that you can connect (GET) to a page and it returns a status 200 (File Exists or not)
+      uri:
+        url: "https://portaldes.selic.bc/sutec_files/jboss_ibm_mq_ramodules_v{{ mq_module_version }}.tar"
+        validate_certs: False
+      when: installed_version.rc == 1
+
+    - name: IMPORTANTE
+      debug: msg="A versao do modulo mq v{{ mq_module_version }} foi instalada com sucesso.
+                  Reinicie todos os servidores JBoss para que a instalacao seja finalizada."
+      when: installed_version.rc == 1
