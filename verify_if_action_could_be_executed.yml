@@ -1,6 +1,6 @@
 ---
 
-- name: Playbook to download IBM RA tar file and install new module in JBoss EAP6 dir structure
+- name: Playbook to IBM MQ RA download tar file and install new module in JBoss EAP6 dir structure
   hosts: '{{ host }}'
 
   tasks:
@@ -11,7 +11,7 @@
 
     - name: Check that you can connect (GET) to a page and it returns a status 200 (File Exists or not)
       uri:
-        url: "https://portaldes.selic.bc/sutec_files/jboss_ibm_mq_ramodules_v{{ mq_module_version }}.tar"
+        url: "https://urlhere/files/jboss_ibm_mq_ramodules_v{{ mq_module_version }}.tar"
         validate_certs: False
       when: installed_version.rc == 1
 
