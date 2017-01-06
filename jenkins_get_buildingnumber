@@ -1,0 +1,9 @@
+#!/bin/bash
+
+rm -f /tmp/jenkins_pre_formatted_xml /tmp/jenkins_formatted_xml /tmp/jenkins_build_result
+curl -s http://localhost:8080/job/teste_ansible_delay/api/xml > /tmp/jenkins_pre_formatted_xml
+xmllint --format /tmp/jenkins_pre_formatted_xml > /tmp/jenkins_formatted_xml
+BUILD_NUMBER=`grep "<number>" /tmp/jenkins_formatted_xml | head -1 | sed 's/[>|<]/;/g' | cut -d ";" -f 3`
+echo $BUILD_NUMBER
+wget -q http://localhost:8080/job/teste_ansible_delay/$BUILD_NUMBER/api/xml --output-document=/tmp/jenkins_build_result
+chmod 777 /tmp/jenkins_build_result
