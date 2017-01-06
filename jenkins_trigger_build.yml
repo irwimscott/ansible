@@ -1,0 +1,34 @@
+---
+
+- name: Teste Jenkins
+  hosts: localhost
+  tasks:
+
+  - name: Removing old result files
+    file: path=/tmp/jenkins_build_result state=absent
+
+  - name: Trigger jenkins build
+    uri:
+     url: http://localhost:8080/job/teste_ansible_delay/build
+     method: GET
+     return_content: yes
+     status_code: 201
+    register: webpage
+
+  - name: Sleep for five seconds until the job start
+    shell: sleep 5
+
+  - shell: /etc/ansible/local_scripts/jenkins_get_buildingnumber
+    register: result
+
+  - debug:
+     msg: "Verificando o id '{{ result.stdout }}' do jenkins"
+
+  - name: Verifying jenkins build number and status
+    action: shell /etc/ansible/local_scripts/jenkins_get_buildingnumber | cat /tmp/jenkins_build_result
+    register: result
+    until: result.stdout.find("SUCCESS") >= 1
+    retries: 10
+    delay: 2
+
+  - debug: msg="Script executado com sucesso."
