@@ -18,8 +18,8 @@
        line: 'Testing lineinfile 2'
       tags: addline2
 
-    - name: Start HTTPD24 if not started
-      service:
-       name: httpd24-httpd
-       state: started
-      become: true
+ #  - name: Start HTTPD24 if not started
+ #    service:
+ #      name: httpd24-httpd
+ #      state: started
+ #     become: true
