@@ -1,4 +1,8 @@
 # plumber.R
+# Tests: http://localhost:8000/calcpu
+# docker pull trestletech/plumber
+# docker run -p 8000:8000 -v `pwd`/api.R:/plumber.R trestletech/plumber /plumber.R
+#
 
 #* Echo back the input
 #* @param msg The message to echo
