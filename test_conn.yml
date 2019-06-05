@@ -1,0 +1,65 @@
+---
+- name:
+  hosts: localhost
+  gather_facts: false
+  become: true
+
+  tasks:
+
+   - debug:
+       msg: START - Testing conn from {{ host_src }} to {{ host_dst}} using port {{ port_dst }}
+
+   - name: Verify if the port is open on dst host and register variable
+     command: timeout 1 bash -c "</dev/tcp/{{host_dst}}/{{port_dst}}"
+     ignore_errors: True
+     register: listen_cmd
+
+   - name: Creating template to open sockets on dst servers
+     template:
+      src: open_socket_script.j2
+      dest: /tmp/open_socket_script.py
+      mode: '0777'
+     delegate_to: '{{host_dst}}'
+     vars:
+      port_dst: '{{ port_dst }}'
+     when: listen_cmd is failed
+     register: create_listen_script
+
+   - name: Open listen ports that is not listening
+     shell: "(cd /tmp; python /tmp/open_socket_script.py >/dev/null 2>&1 &)"
+     async: 10
+     poll: 0
+     delegate_to: '{{host_dst}}'
+     when: create_listen_script is succeeded and listen_cmd is failed
+     register: open_port
+
+   - debug: var=create_listen_script
+
+   - name: Verify if the port is open on dst host and register variable
+     command: timeout 1 bash -c "</dev/tcp/{{host_dst}}/{{port_dst}}"
+     delegate_to: '{{host_src}}'
+     ignore_errors: True
+     register: run_test_on_src
+
+   - name: Kill the python socket process and the listen port after test
+     command: pkill -f /tmp/open_socket_script.py
+     delegate_to: '{{host_dst}}'
+     when: "not create_listen_script|skipped"
+
+   - name: Removing socket script file
+     file:
+      path: /tmp/open_socket_script.py
+      state: absent
+     delegate_to: '{{host_dst}}'
+     ignore_errors: True
+     when: create_listen_script is success or create_listen_script is not skipped
+
+   - debug:
+       msg: END - SUCCESS - Testing conn from {{ host_src }} to {{ host_dst}} using port {{ port_dst }}
+     when: run_test_on_src is succeeded
+
+   - fail:
+      msg: END - FAIL - Testing conn from {{ host_src }} to {{ host_dst}} using port {{ port_dst }}
+     when: run_test_on_src is failed
+
+
